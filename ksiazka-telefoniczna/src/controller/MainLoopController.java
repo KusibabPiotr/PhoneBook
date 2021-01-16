@@ -2,8 +2,11 @@ package controller;
 
 import exceptions.DataExportException;
 import exceptions.DataImportException;
+import exceptions.DuplicateContactException;
 import files.FileManager;
 import files.FileManagerBuilder;
+import io.ConsolePrinter;
+import io.DataReader;
 import model.Contact;
 import repository.ContactRepository;
 
@@ -11,7 +14,9 @@ import java.util.*;
 
 public class MainLoopController {
 
-    static Scanner scanner = new Scanner(System.in);
+    ConsolePrinter printer = new ConsolePrinter();
+    DataReader reader = new DataReader();
+
     private FileManager fileManager;
     private ContactRepository repository;
 
@@ -20,10 +25,10 @@ public class MainLoopController {
         fileManager = new FileManagerBuilder().build();
         try{
             repository = fileManager.load();
-            System.out.println("Zaimportowano dane");
+            printer.printLine("Zaimportowano dane");
         }catch (DataImportException e){
-            System.out.println(e.getMessage());
-            System.out.println("Zainicjowano nową bazę");
+            printer.printLine(e.getMessage());
+            printer.printLine("Zainicjowano nową bazę");
             repository = new ContactRepository();
         }
     }
@@ -33,83 +38,111 @@ public class MainLoopController {
 
         do {
 
+            printOptions();
+            int intOption = getIntOption();
+
             try {
-                printOptions();
-                int intOption = getIntOption();
                 Option option = convertIntOptionToOption(intOption);
-                exit = executeOption(option,repository);
+                exit = executeOption(option);
             }catch (NoSuchElementException e){
-                System.out.println("Podana opcja jest błędna! Spróbuj jeszcze raz!");
+                printer.printLine("Podana opcja jest błędna! Spróbuj jeszcze raz!");
+            }catch (DuplicateContactException e){
+                printer.printLine(e.getMessage());
             }
 
         }while (!exit);
     }
 
-    private boolean executeOption(Option option,ContactRepository repository) {
+    private boolean executeOption(Option option)
+            throws DuplicateContactException {
         switch (option){
             case EXIT:
                 sayGoodBye();
                 return true;
             case ADD:
-                Contact contact = readContact();
-                boolean bool = repository.addContact(contact);
-                printConfirmation(bool);
+                add();
                 break;
             case REMOVEBYNAME:
-                String name = readName();
-                boolean b = repository.removeContactByName(name);
-                printConfirmation(b);
+                removeByName();
                 break;
             case EDIT:
-                String name1 = readName();
-                System.out.println("Nowe dane:");
-                Contact contact1 = readContact();
-                boolean b1 = repository.editContact(contact1, name1);
-                printConfirmation(b1);
+                edit();
                 break;
             case PRINTALL:
-                List<Contact> allContacts = repository.getAllContacts();
-                printAllContacts(allContacts);
+                printAll();
                 break;
             case FINDBYPIECEOFNAME:
-                String pieceOfName = readName();
-                List<Contact> byPartOfName = repository.findByPieceOf(pieceOfName);
-                printAllContacts(byPartOfName);
+                findByPieceOfName();
                 break;
             case FINDBYPIECEOFNUMBER:
-                String number = readNumber();
-                List<Contact> byPieceOfNumber = repository.findByPieceOf(number);
-                printAllContacts(byPieceOfNumber);
+                findByPieceOfNumber();
                 break;
             default:
-                System.out.println("Brak Opcji");
+                printer.printLine("Brak Opcji");
         }
         return false;
     }
 
+    private void findByPieceOfNumber() {
+        String number = readNumber();
+        List<Contact> byPieceOfNumber = repository.findByPieceOf(number);
+        printAllContacts(byPieceOfNumber);
+    }
+
+    private void findByPieceOfName() {
+        String pieceOfName = readName();
+        List<Contact> byPartOfName = repository.findByPieceOf(pieceOfName);
+        printAllContacts(byPartOfName);
+    }
+
+    private void printAll() {
+        List<Contact> allContacts = repository.getAllContacts();
+        printAllContacts(allContacts);
+    }
+
+    private void edit() {
+        String name1 = readName();
+        printer.printLine("Nowe dane:");
+        Contact contact1 = readContact();
+        boolean b1 = repository.editContact(contact1, name1);
+        printConfirmation(b1);
+    }
+
+    private void removeByName() {
+        String name = readName();
+        boolean b = repository.removeContactByName(name);
+        printConfirmation(b);
+    }
+
+    private void add() {
+        Contact contact = readContact();
+        boolean bool = repository.addContact(contact);
+        printConfirmation(bool);
+    }
+
     private String readNumber() {
-        System.out.println("Podaj numer telefonu");
-        return scanner.nextLine();
+        printer.printLine("Podaj numer telefonu");
+        return reader.readLine();
     }
 
     private void printAllContacts(List<Contact> allContacts) {
         if (allContacts.isEmpty()) {
-            System.out.println("Brak kontaktów odpowiadających wyszukaniu");
+            printer.printLine("Brak kontaktów odpowiadających wyszukaniu");
         }else
             allContacts.sort(Comparator.naturalOrder());
             allContacts.forEach(System.out::println);
     }
 
     private String readName() {
-        System.out.println("Podaj nazwę kontaktu");
-        return scanner.nextLine();
+        printer.printLine("Podaj nazwę kontaktu");
+        return reader.readLine();
     }
 
     private void printConfirmation(boolean bool) {
         if (bool){
-            System.out.println("Operacja powiodła się!");
+            printer.printLine("Operacja powiodła się!");
         }else
-            System.out.println("Operacja nie powiodła się!");
+            printer.printLine("Operacja nie powiodła się!");
     }
 
     private Contact readContact() {
@@ -121,12 +154,12 @@ public class MainLoopController {
     private void sayGoodBye() {
         try {
             fileManager.save(repository);
-            System.out.println("Zapisano dane do pliku");
+            printer.printLine("Zapisano dane do pliku");
         }catch (DataExportException e){
-            System.out.println(e.getMessage());
+            printer.printLine(e.getMessage());
         }finally {
-            System.out.println("Do widzenia!");
-            scanner.close();
+            printer.printLine("Do widzenia!");
+            reader.close();
         }
     }
 
@@ -139,21 +172,21 @@ public class MainLoopController {
         boolean ok = false;
         do {
             try {
-                option = scanner.nextInt();
+                option = reader.readInt();
                 ok = true;
             } catch (InputMismatchException e) {
-                System.out.println("Podaj liczbę! Spróbuj jeszcze raz!");
+                printer.printLine("Podaj liczbę! Spróbuj jeszcze raz!");
             } finally {
-                scanner.nextLine();
+                reader.readLine();
             }
         }while (!ok);
         return option;
     }
 
     private void printOptions() {
-        System.out.println("Dostępne opcje");
+        printer.printLine("Dostępne opcje");
         Arrays.stream(Option.values())
-                .forEach(option -> System.out.println(option.ordinal() + " - " +option.getDescription()));
+                .forEach(option -> printer.printLine(option.ordinal() + " - " +option.getDescription()));
     }
 
     public enum Option {

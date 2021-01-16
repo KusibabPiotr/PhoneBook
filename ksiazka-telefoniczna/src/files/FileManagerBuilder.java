@@ -1,15 +1,18 @@
 package files;
 
 import exceptions.NoSuchFileManagerException;
+import io.ConsolePrinter;
+import io.DataReader;
 
 import java.util.Scanner;
 
 public class FileManagerBuilder {
 
-    static Scanner scanner = new Scanner(System.in);
+    DataReader reader = new DataReader();
+    ConsolePrinter printer = new ConsolePrinter();
 
     public FileManager build(){
-        System.out.println("Wybierz format danych");
+        printer.printLine("Wybierz format danych");
         FileType fileType = getFileType();
 
         switch (fileType){
@@ -28,21 +31,21 @@ public class FileManagerBuilder {
 
         do {
             printFileTypes();
-            String type = scanner.nextLine().toUpperCase();
+            String type = reader.readLine().toUpperCase();
             try {
                 fileType = FileType.valueOf(type);
                 typeOk = true;
             }catch (IllegalArgumentException e){
-                System.out.println("Wybierz dostępny typ danych!");
+                printer.printLine("Wybierz dostępny typ danych!");
             }
         }while (!typeOk);
         return fileType;
     }
 
     private void printFileTypes() {
-        System.out.println("Wybierz opcje:");
+        printer.printLine("Wybierz opcje:");
         for (FileType value : FileType.values()) {
-            System.out.println(value);
+            printer.printLine(value.toString());
         }
     }
 }
