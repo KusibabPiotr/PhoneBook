@@ -2,8 +2,8 @@ import controller.MainLoopController;
 
 public class RunClass {
     public static void main(String[] args) {
-        System.out.println("Kruku");
-        MainLoopController.loop();
+        MainLoopController mainLoopController = new MainLoopController();
+        mainLoopController.run();
     }
 
 }

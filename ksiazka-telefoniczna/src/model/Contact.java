@@ -1,8 +1,9 @@
 package model;
 
+import java.io.Serializable;
 import java.util.Objects;
 
-public class Contact implements Comparable<Contact> {
+public class Contact implements Comparable<Contact>, Serializable {
 
     private String name;
     private String number;
@@ -10,6 +11,15 @@ public class Contact implements Comparable<Contact> {
     public Contact(String name, String number) {
         this.name = name;
         this.number = number;
+    }
+    public String toCsv(){
+        return name+";"+number;
+    }
+    public static Contact fromCsv(String csv){
+        String[] split = csv.split(";");
+        String name = split[0];
+        String number = split[1];
+        return new Contact(name,number);
     }
 
     public String getName() {
