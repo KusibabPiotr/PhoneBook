@@ -4,6 +4,7 @@ import exceptions.DuplicateContactException;
 import model.Contact;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class ContactRepository {
     private Map<String, String> contacts = new TreeMap<>();
@@ -37,13 +38,13 @@ public class ContactRepository {
         return false;
     }
 
-    public Map<String,String> getAllContacts(){
-        return contacts;
+    public List<String> getAllContacts(){
+        return new ArrayList<>(contacts.values());
     }
 
-    public List<Contact> findByPartName(String pieceOfName){
-        Set<String> strings = contacts.keySet();
-        strings.stream().filter(n->n.contains(pieceOfName))
-                .
+    public List<String> findByPieceOf(String pieceOf){
+        return contacts.values().stream()
+                .filter(s -> s.contains(pieceOf))
+                .collect(Collectors.toList());
     }
 }

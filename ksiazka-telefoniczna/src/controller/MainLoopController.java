@@ -45,8 +45,18 @@ public class MainLoopController {
                 System.out.println("Edit");
                 break;
             case PRINTALL:
-                Map<String, String> allContacts = repository.getAllContacts();
+                List<String> allContacts = repository.getAllContacts();
                 printAllContacts(allContacts);
+                break;
+            case FINDBYPIECEOFNAME:
+                String pieceOfName = readName();
+                List<String> byPartOfName = repository.findByPieceOf(pieceOfName);
+                printAllContacts(byPartOfName);
+                break;
+            case FINDBYPIECEOFNUMBER:
+                String number = readNumber();
+                List<String> byPieceOfNumber = repository.findByPieceOf(number);
+                printAllContacts(byPieceOfNumber);
                 break;
             default:
                 System.out.println("Brak Opcji");
@@ -54,11 +64,16 @@ public class MainLoopController {
         return false;
     }
 
-    private static void printAllContacts(Map<String, String> allContacts) {
+    private static String readNumber() {
+        System.out.println("Podaj numer telefonu");
+        return scanner.nextLine();
+    }
+
+    private static void printAllContacts(List<String> allContacts) {
         if (allContacts.isEmpty()) {
-            System.out.println("Brak kontaktów w książce");
+            System.out.println("Brak kontaktów odpowiadających wyszukaniu");
         }else
-            allContacts.forEach((key, value) -> System.out.println(value));
+            allContacts.forEach(System.out::println);
     }
 
     private static String readName() {
@@ -74,10 +89,8 @@ public class MainLoopController {
     }
 
     private static Contact readContact() {
-        System.out.println("Podaj nazwę kontaktu");
-        String name = scanner.nextLine();
-        System.out.println("Podaj numer");
-        String number = scanner.nextLine();
+        String name = readName();
+        String number = readNumber();
         return new Contact(name,number);
     }
 
@@ -117,7 +130,9 @@ public class MainLoopController {
         ADD("Dodaj kontakt"),
         REMOVEBYNAME("Usuń kontakt"),
         EDIT("Edytuj kontakt"),
-        PRINTALL("Wyświetl kontakty");
+        PRINTALL("Wyświetl kontakty"),
+        FINDBYPIECEOFNAME("Znajdź kontakt po części imienia"),
+        FINDBYPIECEOFNUMBER("Znajdź kontakt po części numberu telefonu");
 
         private String description;
 

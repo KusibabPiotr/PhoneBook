@@ -30,7 +30,7 @@ public class Contact implements Comparable<Contact> {
 
     @Override
     public String toString() {
-        return "Kontakt: { " + getName() + " ; " + getNumber() + " }";
+        return "Kontakt: " + getName() + ", " + getNumber();
     }
 
     @Override
