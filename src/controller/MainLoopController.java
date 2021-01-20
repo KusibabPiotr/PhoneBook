@@ -7,7 +7,9 @@ import files.FileManager;
 import files.FileManagerBuilder;
 import io.ConsolePrinter;
 import io.DataReader;
+import model.Category;
 import model.Contact;
+import model.Type;
 import repository.ContactRepository;
 
 import java.util.*;
@@ -148,7 +150,29 @@ public class MainLoopController {
     private Contact readContact() {
         String name = readName();
         String number = readNumber();
-        return new Contact(name,number);
+        Category category = readCategory();
+        return new Contact(name,number,category);
+    }
+
+    private Category readCategory() {
+        printer.printLine("kontakt prywatny/biznesowy");
+        printer.printLine("Wybierz 1 lub 2");
+
+        boolean allOk = false;
+        Type type = null;
+
+        do {
+            try {
+                int opt = reader.readInt();
+                type = Type.getType(opt);
+                allOk = true;
+            } catch (InputMismatchException e) {
+                printer.printLine("Wpisz 1 lub 2");
+            }catch (NoSuchElementException e){
+                printer.printLine("Brak opcji ");
+            }
+        }while (!allOk);
+        return new Category(type);
     }
 
     private void sayGoodBye() {

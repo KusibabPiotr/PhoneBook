@@ -8,16 +8,27 @@ public class Contact implements Comparable<Contact>, Serializable {
     private Integer id;
     private String name;
     private String number;
+    private Category category;
 
-    public Contact(String name, String number) {
+    public Contact(String name, String number,Category category) {
         this.name = name;
         this.number = number;
+        this.category = category;
     }
 
-    public Contact(Integer id, String name, String number) {
+    public Contact(Integer id, String name, String number, Category category) {
         this.id = id;
         this.name = name;
         this.number = number;
+        this.category = category;
+    }
+
+    public Category getCategory() {
+        return category;
+    }
+
+    public void setCategory(Category category) {
+        this.category = category;
     }
 
     public Integer getId() {
