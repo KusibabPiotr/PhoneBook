@@ -13,7 +13,7 @@ I started my programming adventure with JavaSE. This is my first project of phon
 Project is created with:
 * Java JDK 13
 
-##
+## Features
 * save method CSV or SERIAL
 * add contact
 * delete contact
