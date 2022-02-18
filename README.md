@@ -4,7 +4,7 @@
 * [General info](#general-info)
 * [Technologies](#technologies)
 * [Setup](#setup)
-* [To-do](#to-do)
+* [Features](#features)
 
 ## General info
 I started my programming adventure with JavaSE. This is my first project of phone book. Application working in console.
@@ -12,6 +12,15 @@ I started my programming adventure with JavaSE. This is my first project of phon
 ## Technologies
 Project is created with:
 * Java JDK 13
+
+##
+* save method CSV or SERIAL
+* add contact
+* delete contact
+* edit contact
+* show all contacts
+* find contact by partitial number
+* * find contact by partitial name
 
 ## Setup
 Just simply clone the code to your favourite IDE - for me IntelliJ :)
