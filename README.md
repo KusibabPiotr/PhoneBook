@@ -20,7 +20,7 @@ Project is created with:
 * edit contact
 * show all contacts
 * find contact by partitial number
-* * find contact by partitial name
+* find contact by partitial name
 
 ## Setup
 Just simply clone the code to your favourite IDE - for me IntelliJ :)
